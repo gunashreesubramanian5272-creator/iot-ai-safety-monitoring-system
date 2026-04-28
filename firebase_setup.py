@@ -1,7 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials, db
 
-cred = credentials.Certificate("C:/Users/user/Downloads/iot-ai-security-firebase-adminsdk-fbsvc-f23cc51222.json")
+cred = credentials.Certificate(".json")
 
 firebase_admin.initialize_app(cred, {
     "databaseURL": "https://iot-ai-security-default-rtdb.firebaseio.com/"
