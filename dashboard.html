@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>IoT AI Dashboard</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: white;
+      text-align: center;
+    }
+
+    .box {
+      background: #222;
+      padding: 20px;
+      margin: 10px;
+      display: inline-block;
+      width: 200px;
+      border-radius: 10px;
+    }
+
+    .safe { color: lightgreen; }
+    .alert { color: red; font-weight: bold; }
+  </style>
+</head>
+
+<body>
+
+<h1>🔥 IoT AI Live Dashboard</h1>
+
+<div class="box">Temperature <h2 id="temp">--</h2></div>
+<div class="box">Water <h2 id="water">--</h2></div>
+<div class="box">Current <h2 id="current">--</h2></div>
+<div class="box">Status <h2 id="status">--</h2></div>
+
+<script>
+
+  // ================================
+  // 🔴 STEP 1: FIREBASE CONFIG (REPLACE THIS)
+  // ================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyC1215bNjp2H0hiBk5bEYPaTYLRMvsuMXM",
+    authDomain: "iot-ai-security.firebaseapp.com",
+    databaseURL: "https://iot-ai-security-default-rtdb.firebaseio.com",
+    projectId: "iot-ai-security",
+    storageBucket: "iot-ai-security.firebasestorage.app",
+    messagingSenderId: "453903642659",
+    appId: "1:453903642659:web:dbe99ebb9066e3ca088196",
+    measurementId: "G-B9BWEG8ZBV"
+  };
+  // ================================
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const ref = db.ref("sensor_data");
+
+ref.limitToLast(1).on("value", (snapshot) => {
+
+    snapshot.forEach((child) => {
+        const data = child.val();
+
+        document.getElementById("temp").innerText = data.temperature ?? "--";
+        document.getElementById("water").innerText = data.water ?? "--";
+        document.getElementById("current").innerText = data.current ?? "--";
+        document.getElementById("status").innerText = data.status ?? "--";
+    });
+
+});
+
+  ref.on("value", (snapshot) => {
+
+    const dataObj = snapshot.val();
+
+    if (!dataObj) {
+      console.log("No data found");
+      return;
+    }
+
+    const lastKey = Object.keys(dataObj).pop();
+    const data = dataObj[lastKey];
+
+    document.getElementById("temp").innerText = data.temperature;
+    document.getElementById("water").innerText = data.water;
+    document.getElementById("current").innerText = data.current;
+
+    const statusEl = document.getElementById("status");
+    statusEl.innerText = data.status;
+
+    if (data.status === "SAFE") {
+      statusEl.className = "safe";
+    } else {
+      statusEl.className = "alert";
+    }
+  });
+
+</script>
+
+</body>
+</html>
